@@ -128,6 +128,9 @@ fun TodoScreen(
     viewModel : TodoViewModel,
     modifier: Modifier
 ) {
+    var isDialogShow by remember{
+        mutableStateOf(false)
+    }
     viewModel.getAllTodos()
     viewModel.todos.observeAsState().value?.let{ data ->
         Box(
@@ -140,7 +143,16 @@ fun TodoScreen(
                     .fillMaxSize(),
                 onItemTodoClick = onItemTodoClick,
                 onItemTodoLongClick = onItemTodoLongClick,
-                idTodoItemToBeDeleted = idTodoItemToBeDeleted
+                idTodoItemToBeDeleted = idTodoItemToBeDeleted,
+                onCheckboxValueChanged = { newTodo ->
+                    isDialogShow = true
+                    viewModel.updateTodo(newTodo).observeAsState().value?.let{ isUpdateSucceed ->
+                        if(isUpdateSucceed){
+                            viewModel.getAllTodos()
+                            isDialogShow = false
+                        }
+                    }
+                }
             )
             FloatingActionButton(
                 onClick = onButtonAddTodoClicked,
@@ -149,6 +161,17 @@ fun TodoScreen(
                     .padding(end = 20.dp, bottom = 30.dp)
             ) {
                 Icon(imageVector = Icons.Filled.Add, contentDescription = "Add Todo Button")
+            }
+
+            if(isDialogShow){
+                CustomProgressBarDialog(
+                    onDismiss = { },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .wrapContentHeight()
+                        .padding(10.dp)
+                        .align(Alignment.Center)
+                )
             }
         }
     }
@@ -161,7 +184,8 @@ private fun TodoGrid(
     todos : List<TodoEntity>,
     onItemTodoClick : (Int) -> Unit,
     onItemTodoLongClick : (Int) -> Unit,
-    idTodoItemToBeDeleted : Int
+    idTodoItemToBeDeleted : Int,
+    onCheckboxValueChanged :@Composable (TodoEntity) -> Unit = {}
 ) {
     LazyVerticalStaggeredGrid(
         columns = StaggeredGridCells.Fixed(2),
@@ -176,7 +200,8 @@ private fun TodoGrid(
                     .padding(4.dp),
                 onItemTodoClick = onItemTodoClick,
                 onItemTodoLongClick = onItemTodoLongClick,
-                idTodoItemToBeDeleted = idTodoItemToBeDeleted
+                idTodoItemToBeDeleted = idTodoItemToBeDeleted,
+                onCheckboxValueChanged = onCheckboxValueChanged
             )
         }
     }
@@ -190,12 +215,31 @@ private fun CardTodo(
     todo : TodoEntity,
     onItemTodoClick : (Int) -> Unit,
     onItemTodoLongClick : (Int) -> Unit,
-    idTodoItemToBeDeleted : Int
+    idTodoItemToBeDeleted : Int,
+    onCheckboxValueChanged : @Composable (TodoEntity) -> Unit = {}
 ) {
 
     var isDone by remember{
         mutableStateOf(todo.done)
     }
+
+    var checkBoxClickedCounter by remember{
+        mutableStateOf(0)
+    }
+
+    /**
+     * Todo(this function below always called every time CardTodo function rendered, each of it will always interacting with the database everytime it's displayed on the screen)
+     * Todo(the current problem is that we can't call composable function from non-composable one, that's why we put it outside the on click function of card view)
+     * Todo(but it seems to raise the other problem as described in the first point)
+     *
+     */
+    if(checkBoxClickedCounter != 0){
+        onCheckboxValueChanged(
+            todo.copy(done = isDone)
+        )
+    }
+
+
 
     Card(
         shape = RoundedCornerShape(3),
@@ -243,19 +287,26 @@ private fun CardTodo(
             )
             Checkbox(
                 checked = isDone,
-                onCheckedChange = { isDone = !isDone}
+                onCheckedChange = {
+                    isDone = !isDone
+                    checkBoxClickedCounter++
+                }
             )
         }
+
+
 
     }
 }
 
+
+
 @Composable
 fun CustomProgressBarDialog(
+    modifier : Modifier = Modifier,
     onDismiss : () -> Unit,
     dismissOnBackPress : Boolean = false,
     dismissOnClickOutside : Boolean = false,
-    modifier : Modifier = Modifier
 ){
     Dialog(
         onDismissRequest = onDismiss,

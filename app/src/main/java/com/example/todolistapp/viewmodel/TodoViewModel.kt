@@ -6,6 +6,7 @@ import android.util.Log
 import androidx.lifecycle.*
 import com.example.todolistapp.database.TodoEntity
 import com.example.todolistapp.model.TodoRepository
+import com.example.todolistapp.util.TodoUtil
 import kotlinx.coroutines.launch
 
 private const val TAG = "TodoViewModel-TAG"
@@ -87,6 +88,20 @@ class TodoViewModel(
 
     private fun Logger(e : Exception){
         Log.e(TAG, "Error occured", e)
+    }
+
+    fun sortTodosByDeadlineDate(){
+        val todosToBeSorted = _todos.value
+        _todos.value = todosToBeSorted?.let{
+            TodoUtil.sortTodosByDeadlineDate(it)
+        }
+    }
+
+    fun sortTodosByTitle(){
+        val todosToBeSorted = _todos.value
+        _todos.value = todosToBeSorted?.let{
+            TodoUtil.sortTodosByTitle(it)
+        }
     }
 
 

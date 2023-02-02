@@ -10,19 +10,19 @@ internal class TodoUtilTest{
     @Test
     fun `sort todos by deadline date returns true`(){
         val todos = listOf(
-            TodoEntity(createdAt = "22/10/2022"),
-            TodoEntity(createdAt = "22/11/2022"),
-            TodoEntity(createdAt = "01/10/2022"),
-            TodoEntity(createdAt = "01/01/2022"),
-            TodoEntity(createdAt = "19/9/2022")
+            TodoEntity(createdAt = "2022-10-22"),
+            TodoEntity(createdAt = "2022-11-22"),
+            TodoEntity(createdAt = "2022-10-01"),
+            TodoEntity(createdAt = "2022-01-01"),
+            TodoEntity(createdAt = "2022-09-19")
         )
 
         val expectedResult = listOf(
-            TodoEntity(createdAt = "01/01/2022"),
-            TodoEntity(createdAt = "19/9/2022"),
-            TodoEntity(createdAt = "01/10/2022"),
-            TodoEntity(createdAt = "22/10/2022"),
-            TodoEntity(createdAt = "22/11/2022")
+            TodoEntity(createdAt = "2022-01-01"),
+            TodoEntity(createdAt = "2022-09-19"),
+            TodoEntity(createdAt = "2022-10-01"),
+            TodoEntity(createdAt = "2022-10-22"),
+            TodoEntity(createdAt = "2022-11-22")
         )
 
         val sortedTodo = TodoUtil.sortTodosByDeadlineDate(todos)
@@ -32,19 +32,19 @@ internal class TodoUtilTest{
     @Test
     fun `sort todos by deadline date returns false`(){
         val todos = listOf(
-            TodoEntity(createdAt = "22/10/2022"),
-            TodoEntity(createdAt = "22/11/2022"),
-            TodoEntity(createdAt = "01/10/2022"),
-            TodoEntity(createdAt = "01/01/2022"),
-            TodoEntity(createdAt = "19/9/2022")
+            TodoEntity(createdAt = "2022-10-22"),
+            TodoEntity(createdAt = "2022-11-22"),
+            TodoEntity(createdAt = "2022-10-01"),
+            TodoEntity(createdAt = "2022-01-01"),
+            TodoEntity(createdAt = "2022-09-19")
         )
 
         val expectedResult = listOf(
-            TodoEntity(createdAt = "19/9/2022"),
-            TodoEntity(createdAt = "01/01/2022"),
-            TodoEntity(createdAt = "01/10/2022"),
-            TodoEntity(createdAt = "22/10/2022"),
-            TodoEntity(createdAt = "22/11/2022")
+            TodoEntity(createdAt = "2022-09-19"),
+            TodoEntity(createdAt = "2022-01-01"),
+            TodoEntity(createdAt = "2022-10-01"),
+            TodoEntity(createdAt = "2022-10-22"),
+            TodoEntity(createdAt = "2022-11-22")
         )
 
         val sortedTodo = TodoUtil.sortTodosByDeadlineDate(todos)

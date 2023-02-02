@@ -1,6 +1,7 @@
 package com.example.todolistapp.ui.todo.ui
 
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -8,6 +9,7 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -25,6 +27,7 @@ fun AddOrEditTodoScreen(
     viewModel : TodoViewModel,
     idTodo : Int
 ) {
+    val context = LocalContext.current.applicationContext
     if(idTodo != -1){
         viewModel.getTodoById(idTodo).observeAsState().value?.let{ todo ->
             FormEditOrAdd(
@@ -32,6 +35,7 @@ fun AddOrEditTodoScreen(
                 todo = todo,
                 databaseAction = { itemTodo ->
                     viewModel.updateTodo(itemTodo)
+                    Toast.makeText(context, "Updated", Toast.LENGTH_SHORT).show()
                 }
             )
         }
@@ -41,6 +45,7 @@ fun AddOrEditTodoScreen(
             todo = TodoEntity(),
             databaseAction = { itemTodo ->
                 viewModel.insertTodo(itemTodo)
+                Toast.makeText(context, "Saved", Toast.LENGTH_SHORT).show()
             }
         )
     }
@@ -72,6 +77,8 @@ private fun FormEditOrAdd(
         date = it
     }
     val dateDialogState = rememberMaterialDialogState()
+
+
 
     DatePicker(getPickedDate = getPickedDate, dateDialogState = dateDialogState)
 

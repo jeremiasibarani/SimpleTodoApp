@@ -6,7 +6,7 @@ import java.util.*
 
 object TodoUtil {
 
-    private val dateFormatter = SimpleDateFormat("dd/MM/yyyy", Locale.US)
+    private val dateFormatter = SimpleDateFormat("yyyy-MM-dd", Locale.US)
 
     fun sortTodosByDeadlineDate(todos : List<TodoEntity>) : List<TodoEntity>{
         return todos.sortedBy{
