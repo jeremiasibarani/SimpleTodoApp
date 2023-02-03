@@ -20,6 +20,10 @@ class TodoViewModel(
     private val _todos = MutableLiveData<List<TodoEntity>>()
     val todos : LiveData<List<TodoEntity>> get() = _todos
 
+    init{
+        getAllTodos()
+    }
+
     fun insertTodo(todo : TodoEntity) : LiveData<Boolean>{
         val queryStatus = MutableLiveData<Boolean>()
         viewModelScope.launch {

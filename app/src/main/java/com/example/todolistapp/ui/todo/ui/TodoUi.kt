@@ -131,7 +131,6 @@ fun TodoScreen(
     var isDialogShow by remember{
         mutableStateOf(false)
     }
-    viewModel.getAllTodos()
     viewModel.todos.observeAsState().value?.let{ data ->
         Box(
             modifier = modifier

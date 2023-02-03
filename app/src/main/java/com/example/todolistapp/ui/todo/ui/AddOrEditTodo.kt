@@ -2,7 +2,12 @@ package com.example.todolistapp.ui.todo.ui
 
 import android.util.Log
 import android.widget.Toast
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
@@ -10,10 +15,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.todolistapp.R
 import com.example.todolistapp.database.TodoEntity
 import com.example.todolistapp.viewmodel.TodoViewModel
 import com.vanpra.composematerialdialogs.MaterialDialog
@@ -71,7 +78,7 @@ private fun FormEditOrAdd(
         description = it
     }
     var date by remember{
-        mutableStateOf(todo.createdAt)
+        mutableStateOf(if(todo.createdAt == "") LocalDate.now().toString() else todo.createdAt)
     }
     val getPickedDate : (String) -> Unit = {
         date = it
@@ -83,25 +90,29 @@ private fun FormEditOrAdd(
     DatePicker(getPickedDate = getPickedDate, dateDialogState = dateDialogState)
 
     Column(
-        modifier = modifier
+        modifier = modifier,
     ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .wrapContentHeight(),
+                .wrapContentHeight()
+                .background(
+                    color = MaterialTheme.colorScheme.primary
+                ),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.End
+            horizontalArrangement = Arrangement.End,
+
         ) {
-            TextButton(
+            IconButton(
                 onClick = {
                     dateDialogState.show()
                 },
                 modifier = Modifier
                     .wrapContentSize()
             ) {
-                Text(text = "Pick date")
+                Icon(imageVector = Icons.Filled.DateRange, contentDescription = "Pick date icon")
             }
-            TextButton(
+            IconButton(
                 onClick = {
                    databaseAction(
                        todo.copy(
@@ -113,15 +124,18 @@ private fun FormEditOrAdd(
                 },
                 modifier = Modifier.wrapContentSize()
             ) {
-                Text(text = "Save")
+                Icon(painter = painterResource(id = R.drawable.ic_baseline_save_24), contentDescription = "Add todo icon")
             }
         }
+
+        Divider()
+
         CustomTextField(
             value = title,
             modifier = Modifier
                 .fillMaxWidth()
                 .wrapContentHeight(),
-            placeHolder = "title here",
+            placeHolder = "Title",
             onValueChanged = onTitleValueChanged,
             singleLine = true,
             textStyle = MaterialTheme.typography.titleLarge
@@ -135,7 +149,7 @@ private fun FormEditOrAdd(
                 value = description,
                 modifier = Modifier
                     .fillMaxSize(),
-                placeHolder = "description here",
+                placeHolder = "Description",
                 onValueChanged = onDescriptionValueChanged,
                 textStyle = MaterialTheme.typography.bodyLarge
             )
@@ -171,12 +185,13 @@ private fun CustomTextField(
             style = textStyle
         ) },
         colors = TextFieldDefaults.textFieldColors(
-            disabledTextColor = MaterialTheme.colorScheme.onPrimary,
-            containerColor = MaterialTheme.colorScheme.onPrimary,
-            focusedIndicatorColor = MaterialTheme.colorScheme.onPrimary,
+            disabledTextColor = MaterialTheme.colorScheme.surfaceVariant,
+            containerColor = MaterialTheme.colorScheme.surfaceVariant,
+            focusedIndicatorColor = MaterialTheme.colorScheme.surfaceVariant,
             unfocusedIndicatorColor = MaterialTheme.colorScheme.onPrimary
         ),
-        singleLine = singleLine
+        singleLine = singleLine,
+        shape = RoundedCornerShape(0)
     )
 }
 
@@ -192,11 +207,12 @@ private fun DatePicker(
                 Log.i("Date-TAG", "Picked a date")
             }
             negativeButton(text = "Cancel")
-        }
+        },
+        backgroundColor = MaterialTheme.colorScheme.primary
     ) {
         datepicker(
             initialDate = LocalDate.now(),
-            title = "Pick a date"
+            title = "Pick a date",
         ){
             getPickedDate(it.toString())
             Log.i("Date-TAG", "Date : $it")
@@ -204,10 +220,15 @@ private fun DatePicker(
     }
 }
 
-//@Preview(showBackground = true)
-//@Composable
-//private fun Preview() {
-//    AddOrEditTodoScreen(
-//        todo = TodoEntity()
-//    )
-//}
+@Preview(showBackground = true)
+@Composable
+private fun Preview() {
+    Surface{
+        FormEditOrAdd(todo = TodoEntity(
+            title = "Sample 1",
+            description = "Sample 2",
+            createdAt = "2022-01-01",
+            done = false
+        ))
+    }
+}

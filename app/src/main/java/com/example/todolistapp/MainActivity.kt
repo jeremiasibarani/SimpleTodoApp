@@ -164,12 +164,14 @@ class MainActivity : ComponentActivity() {
                     text = { Text(text = "Sort by date") },
                     onClick = {
                         todoViewModel.sortTodosByDeadlineDate()
+                        expanded = false
                     }
                 )
                 DropdownMenuItem(
                     text = { Text(text = "Sort by title") },
                     onClick = {
                         todoViewModel.sortTodosByTitle()
+                        expanded = false
                     }
                 )
             }
