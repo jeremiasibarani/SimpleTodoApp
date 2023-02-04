@@ -15,109 +15,21 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import com.example.todolistapp.database.TodoEntity
 import com.example.todolistapp.ui.theme.TodoListAppTheme
+import com.example.todolistapp.util.TodoUtil
 import com.example.todolistapp.viewmodel.TodoViewModel
 import com.vanpra.composematerialdialogs.MaterialDialog
 import com.vanpra.composematerialdialogs.MaterialDialogState
 import com.vanpra.composematerialdialogs.title
-
-private val todos = listOf(
-    TodoEntity(
-        title = "Sample todo 1 asdjak jsdalsdja lsdas adasdadanasdasdasdasdasd asdasd a",
-        description = "Sample description 1",
-        imagePath = "Sample image path",
-        createdAt = "17/01/2023"
-    ),
-    TodoEntity(
-        title = "Sample todo 1",
-        description = "Sample description 1",
-        imagePath = "Sample image path",
-        createdAt = "17/01/2023"
-    ),
-    TodoEntity(
-        title = "Sample todo 1",
-        description = "Sample description 1",
-        imagePath = "Sample image path",
-        createdAt = "17/01/2023"
-    ),
-    TodoEntity(
-        title = "Sample todo 1",
-        description = "Sample description 1",
-        imagePath = "Sample image path",
-        createdAt = "17/01/2023"
-    ),
-    TodoEntity(
-        title = "Sample todo 1 asdjak jsdalsdja lsdas adasdadanasdasdasdasdasd asdasd a",
-        description = "Sample description 1",
-        imagePath = "Sample image path",
-        createdAt = "17/01/2023"
-    ),
-    TodoEntity(
-        title = "Sample todo 1",
-        description = "Sample description 1",
-        imagePath = "Sample image path",
-        createdAt = "17/01/2023"
-    ),
-    TodoEntity(
-        title = "Sample todo 1",
-        description = "Sample description 1",
-        imagePath = "Sample image path",
-        createdAt = "17/01/2023"
-    ),
-    TodoEntity(
-        title = "Sample todo 1 asdjak jsdalsdja lsdas adasdadanasdasdasdasdasd asdasd a",
-        description = "Sample description 1",
-        imagePath = "Sample image path",
-        createdAt = "17/01/2023"
-    ),TodoEntity(
-        title = "Sample todo 1 asdjak jsdalsdja lsdas adasdadanasdasdasdasdasd asdasd a",
-        description = "Sample description 1",
-        imagePath = "Sample image path",
-        createdAt = "17/01/2023"
-    ),
-    TodoEntity(
-        title = "Sample todo 1",
-        description = "Sample description 1",
-        imagePath = "Sample image path",
-        createdAt = "17/01/2023"
-    ),
-    TodoEntity(
-        title = "Sample todo 1",
-        description = "Sample description 1",
-        imagePath = "Sample image path",
-        createdAt = "17/01/2023"
-    ),
-    TodoEntity(
-        title = "Sample todo 1",
-        description = "Sample description 1",
-        imagePath = "Sample image path",
-        createdAt = "17/01/2023"
-    ),
-    TodoEntity(
-        title = "Sample todo 1 asdjak jsdalsdja lsdas adasdadanasdasdasdasdasd asdasd a",
-        description = "Sample description 1",
-        imagePath = "Sample image path",
-        createdAt = "17/01/2023"
-    ),
-    TodoEntity(
-        title = "Sample todo 1",
-        description = "Sample description 1",
-        imagePath = "Sample image path",
-        createdAt = "17/01/2023"
-    ),
-    TodoEntity(
-        title = "Sample todo 1",
-        description = "Sample description 1",
-        imagePath = "Sample image path",
-        createdAt = "17/01/2023"
-    ),
-)
+import java.time.LocalDate
 
 @Composable
 fun TodoScreen(
@@ -128,9 +40,6 @@ fun TodoScreen(
     viewModel : TodoViewModel,
     modifier: Modifier
 ) {
-    var isDialogShow by remember{
-        mutableStateOf(false)
-    }
     viewModel.todos.observeAsState().value?.let{ data ->
         Box(
             modifier = modifier
@@ -144,14 +53,9 @@ fun TodoScreen(
                 onItemTodoLongClick = onItemTodoLongClick,
                 idTodoItemToBeDeleted = idTodoItemToBeDeleted,
                 onCheckboxValueChanged = { newTodo ->
-                    isDialogShow = true
-                    viewModel.updateTodo(newTodo).observeAsState().value?.let{ isUpdateSucceed ->
-                        if(isUpdateSucceed){
-                            viewModel.getAllTodos()
-                            isDialogShow = false
-                        }
-                    }
-                }
+                    viewModel.updateTodo(newTodo)
+                },
+                viewModel = viewModel
             )
             FloatingActionButton(
                 onClick = onButtonAddTodoClicked,
@@ -160,17 +64,6 @@ fun TodoScreen(
                     .padding(end = 20.dp, bottom = 30.dp)
             ) {
                 Icon(imageVector = Icons.Filled.Add, contentDescription = "Add Todo Button")
-            }
-
-            if(isDialogShow){
-                CustomProgressBarDialog(
-                    onDismiss = { },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .wrapContentHeight()
-                        .padding(10.dp)
-                        .align(Alignment.Center)
-                )
             }
         }
     }
@@ -184,7 +77,8 @@ private fun TodoGrid(
     onItemTodoClick : (Int) -> Unit,
     onItemTodoLongClick : (Int) -> Unit,
     idTodoItemToBeDeleted : Int,
-    onCheckboxValueChanged :@Composable (TodoEntity) -> Unit = {}
+    viewModel: TodoViewModel,
+    onCheckboxValueChanged : (TodoEntity) -> Unit = {}
 ) {
     LazyVerticalStaggeredGrid(
         columns = StaggeredGridCells.Fixed(2),
@@ -200,7 +94,8 @@ private fun TodoGrid(
                 onItemTodoClick = onItemTodoClick,
                 onItemTodoLongClick = onItemTodoLongClick,
                 idTodoItemToBeDeleted = idTodoItemToBeDeleted,
-                onCheckboxValueChanged = onCheckboxValueChanged
+                onCheckboxValueChanged = onCheckboxValueChanged,
+                viewModel = viewModel
             )
         }
     }
@@ -212,32 +107,16 @@ private fun TodoGrid(
 private fun CardTodo(
     modifier: Modifier = Modifier,
     todo : TodoEntity,
-    onItemTodoClick : (Int) -> Unit,
-    onItemTodoLongClick : (Int) -> Unit,
+    onItemTodoClick : (Int) -> Unit = {},
+    onItemTodoLongClick : (Int) -> Unit = {},
     idTodoItemToBeDeleted : Int,
-    onCheckboxValueChanged : @Composable (TodoEntity) -> Unit = {}
+    onCheckboxValueChanged : (TodoEntity) -> Unit = {},
+    viewModel : TodoViewModel
 ) {
 
     var isDone by remember{
         mutableStateOf(todo.done)
     }
-
-    var checkBoxClickedCounter by remember{
-        mutableStateOf(0)
-    }
-
-    /**
-     * Todo(this function below always called every time CardTodo function rendered, each of it will always interacting with the database everytime it's displayed on the screen)
-     * Todo(the current problem is that we can't call composable function from non-composable one, that's why we put it outside the on click function of card view)
-     * Todo(but it seems to raise the other problem as described in the first point)
-     *
-     */
-    if(checkBoxClickedCounter != 0){
-        onCheckboxValueChanged(
-            todo.copy(done = isDone)
-        )
-    }
-
 
 
     Card(
@@ -255,14 +134,18 @@ private fun CardTodo(
     ) {
         Text(
             text = todo.title,
-            style = MaterialTheme.typography.labelLarge,
+            style = MaterialTheme.typography.labelLarge.copy(
+                fontWeight = FontWeight.Bold,
+                fontSize = 18.sp,
+                letterSpacing = 0.5.sp
+            ),
             modifier = Modifier
                 .fillMaxWidth()
                 .wrapContentHeight()
                 .padding(top = 10.dp, start = 10.dp, end = 10.dp)
         )
         Text(
-            text = todo.createdAt,
+            text = viewModel.findDifferenceBetweenDatesInDays(LocalDate.now().toString(), todo.createdAt),
             modifier = Modifier
                 .fillMaxWidth()
                 .wrapContentHeight()
@@ -279,7 +162,11 @@ private fun CardTodo(
         ) {
             Text(
                 text = "Done",
-                style = MaterialTheme.typography.bodyMedium,
+                style = MaterialTheme.typography.bodyMedium.copy(
+                    fontSize = 15.sp,
+                    fontWeight = FontWeight.W500,
+                    letterSpacing = 0.3.sp
+                ),
                 modifier = Modifier
                     .wrapContentHeight()
                     .weight(1f)
@@ -288,7 +175,9 @@ private fun CardTodo(
                 checked = isDone,
                 onCheckedChange = {
                     isDone = !isDone
-                    checkBoxClickedCounter++
+                    onCheckboxValueChanged(
+                        todo.copy(done = isDone)
+                    )
                 }
             )
         }
@@ -348,17 +237,22 @@ fun CustomProgressBarDialog(
 @Composable
 fun Prev() {
     MaterialTheme() {
-        Surface(
-            modifier = Modifier
-                .fillMaxSize()
-        ) {
-            CustomProgressBarDialog(
-                onDismiss = {  },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .wrapContentHeight()
-                    .padding(10.dp)
-            )
-        }
+//        Surface(
+//            modifier = Modifier
+//                .fillMaxSize()
+//        ) {
+//            CustomProgressBarDialog(
+//                onDismiss = {  },
+//                modifier = Modifier
+//                    .fillMaxWidth()
+//                    .wrapContentHeight()
+//                    .padding(10.dp)
+//            )
+//        }
+//        CardTodo(todo = TodoEntity(
+//            title = "Sample title here alh aoihe ashd uehka sd haue kasd ejlajo aijrlaiej la",
+//            createdAt = "21 days left",
+//            done = true
+//        ), idTodoItemToBeDeleted = -1)
     }
 }

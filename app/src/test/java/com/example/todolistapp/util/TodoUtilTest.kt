@@ -96,4 +96,16 @@ internal class TodoUtilTest{
         assertThat(sortedTodo == expectedResult).isFalse()
     }
 
+    @Test
+    fun `Diff in day between 2023-02-20 and 2023-02-21 returns 1`(){
+        val diff = TodoUtil.findTheDifferenceBetweenTwoDatesInDays("2023-02-20", "2023-02-21")
+        assertThat(diff).isEqualTo(1)
+    }
+
+    @Test
+    fun `Diff in day between 2023-01-01 and 2023-01-31 returns 30`(){
+        val diff = TodoUtil.findTheDifferenceBetweenTwoDatesInDays("2023-01-01", "2023-01-31")
+        assertThat(diff).isEqualTo(30)
+    }
+
 }

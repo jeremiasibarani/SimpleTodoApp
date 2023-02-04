@@ -90,7 +90,7 @@ class MainActivity : ComponentActivity() {
                                             content = {
                                                 Icon(
                                                     imageVector = Icons.Filled.Delete,
-                                                    contentDescription = "Delete todo item icon"
+                                                    contentDescription = "Delete todo item icon",
                                                 )
                                             }
                                         )

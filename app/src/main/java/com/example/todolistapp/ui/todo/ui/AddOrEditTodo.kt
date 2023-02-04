@@ -110,7 +110,7 @@ private fun FormEditOrAdd(
                 modifier = Modifier
                     .wrapContentSize()
             ) {
-                Icon(imageVector = Icons.Filled.DateRange, contentDescription = "Pick date icon")
+                Icon(painter = painterResource(id = R.drawable.ic_baseline_calendar_month_24), contentDescription = "Pick date icon")
             }
             IconButton(
                 onClick = {

@@ -30,6 +30,7 @@ class TodoViewModel(
             try{
                 todoRepository.insertTodo(todo)
                 queryStatus.value = true
+                getAllTodos()
             }catch (e : Exception){
                 queryStatus.value = false
                 Logger(e)
@@ -66,6 +67,7 @@ class TodoViewModel(
             try{
                 todoRepository.updateTodo(todo)
                 queryStatus.value = true
+                getAllTodos()
             }catch (e : Exception){
                 Logger(e)
                 queryStatus.value = false
@@ -81,6 +83,7 @@ class TodoViewModel(
             try{
                 todoRepository.deleteTodoById(todoId)
                 queryStatus.value = true
+                getAllTodos()
             }catch (e : Exception){
                 Logger(e)
                 queryStatus.value = false
@@ -106,6 +109,11 @@ class TodoViewModel(
         _todos.value = todosToBeSorted?.let{
             TodoUtil.sortTodosByTitle(it)
         }
+    }
+
+    fun findDifferenceBetweenDatesInDays(fromDate : String, toDate : String) : String{
+        val diff = TodoUtil.findTheDifferenceBetweenTwoDatesInDays(fromDate, toDate)
+        return if(diff > 0) "$diff day${if(diff > 1L) "s" else ""} left" else "Today"
     }
 
 
