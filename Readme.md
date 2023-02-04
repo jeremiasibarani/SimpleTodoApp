@@ -23,4 +23,7 @@
   Programming language : Kotlin  
   Automation tool : Gradle  
   Database : SQL Lite  
-  Android parts : Live Data, View Model, Room Database, Jetpack Compose, Navigation
+  Android parts : Live Data, View Model, Room Database, Jetpack Compose, Navigation  
+    
+     
+   nb : if the preview images don't load, pls refresh the page
